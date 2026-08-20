@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>asklana. — Client Discovery</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0a;
+  --bg2: #111111;
+  --bg3: #1a1a1a;
+  --card: #141414;
+  --border: rgba(255,255,255,0.08);
+  --border-hover: rgba(255,255,255,0.2);
+  --periwinkle: #8b8ff5;
+  --periwinkle-light: #a8abff;
+  --white: #ffffff;
+  --off-white: #e8e8e8;
+  --gray: #888888;
+  --gray-light: #cccccc;
+  --accent-green: #b8f5a0;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:"Plus Jakarta Sans",sans-serif;font-size:17px;line-height:1.6;overflow-x:hidden;}
+ 
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:999;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:64px;}
+.nav-logo{font-size:1.05rem;font-weight:800;color:var(--white);text-decoration:none;letter-spacing:-0.02em;}
+.nav-logo span{color:var(--periwinkle);}
+.nav-back{display:inline-flex;align-items:center;gap:0.4rem;border:1px solid var(--border);color:#cccccc;font-size:0.8rem;font-weight:600;padding:0.38rem 0.9rem;border-radius:100px;text-decoration:none;transition:all 0.2s;}
+.nav-back:hover{border-color:var(--border-hover);color:var(--white);}
+.nav-back svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+ 
+/* ── PROGRESS ── */
+.prog-bar{position:fixed;top:64px;left:0;height:2px;background:var(--periwinkle);z-index:998;width:0%;transition:width 0.35s ease;box-shadow:0 0 8px rgba(139,143,245,0.5);}
+ 
+/* ── HERO ── */
+.hero{min-height:100vh;padding-top:64px;display:flex;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(139,143,245,0.09) 0%,transparent 65%);pointer-events:none;}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;}
+.hero-content{position:relative;z-index:1;max-width:680px;padding:4rem 1.5rem;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:0.5rem;font-size:0.72rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--periwinkle);margin-bottom:1.5rem;}
+.hero-eyebrow::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--periwinkle);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.hero-title{font-size:clamp(2.2rem,5.5vw,3.8rem);font-weight:800;letter-spacing:-0.04em;line-height:1.05;margin-bottom:1.2rem;}
+.hero-title em{font-style:italic;font-weight:300;color:var(--periwinkle-light);}
+.hero-sub{font-size:1.02rem;color:#cccccc;line-height:1.75;max-width:500px;margin:0 auto 2.5rem;}
+.hero-chips{display:flex;align-items:center;justify-content:center;gap:0.6rem;flex-wrap:wrap;margin-bottom:3rem;}
+.hero-chip{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:#cccccc;font-size:0.78rem;font-weight:500;padding:0.28rem 0.8rem;border-radius:100px;}
+.hero-scroll{display:flex;flex-direction:column;align-items:center;gap:0.4rem;color:#bbb;font-size:0.62rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;animation:bob 2.5s ease-in-out infinite;}
+.hero-scroll svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;}
+@keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
+ 
+/* ── PROCESS STRIP ── */
+.process-section{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:4rem 1.5rem;}
+.process-inner{max-width:900px;margin:0 auto;}
+.section-eyebrow{font-size:0.72rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--periwinkle);margin-bottom:1rem;display:flex;align-items:center;gap:0.6rem;}
+.section-eyebrow::before{content:"";width:20px;height:1px;background:var(--periwinkle);}
+.section-h2{font-size:clamp(1.5rem,2.8vw,2.2rem);font-weight:800;letter-spacing:-0.03em;line-height:1.1;margin-bottom:0.6rem;}
+.section-sub{color:#cccccc;font-size:0.93rem;max-width:540px;line-height:1.72;margin-bottom:3rem;}
+.process-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;}
+.process-steps::before{content:"";position:absolute;top:22px;left:calc(12.5% + 1px);right:calc(12.5% + 1px);height:1px;background:linear-gradient(to right,var(--periwinkle),rgba(139,143,245,0.2));z-index:0;}
+.process-step{padding:0 1.2rem;position:relative;z-index:1;}
+.process-step:first-child{padding-left:0;}
+.process-step:last-child{padding-right:0;}
+.step-num{width:44px;height:44px;border-radius:50%;background:var(--bg);border:1px solid var(--periwinkle);display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:800;color:var(--periwinkle);margin-bottom:1.1rem;letter-spacing:0.04em;}
+.step-title{font-size:0.9rem;font-weight:700;color:var(--white);margin-bottom:0.35rem;line-height:1.3;}
+.step-desc{font-size:0.83rem;color:#cccccc;line-height:1.6;}
+.step-tag{display:inline-block;margin-top:0.5rem;background:rgba(139,143,245,0.1);border:1px solid rgba(139,143,245,0.2);color:var(--periwinkle-light);font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:0.18rem 0.55rem;border-radius:100px;}
+.onboard-note{margin-top:2.5rem;background:rgba(184,245,160,0.05);border:1px solid rgba(184,245,160,0.15);border-radius:12px;padding:1rem 1.4rem;display:flex;align-items:center;gap:0.75rem;max-width:600px;}
+.onboard-dot{width:7px;height:7px;border-radius:50%;background:var(--accent-green);flex-shrink:0;animation:pulse 2s ease-in-out infinite;}
+.onboard-note p{font-size:0.86rem;color:var(--accent-green);font-weight:500;line-height:1.5;}
+ 
+/* ── BENEFITS ── */
+.benefits-section{padding:4rem 1.5rem;border-bottom:1px solid var(--border);}
+.benefits-inner{max-width:900px;margin:0 auto;}
+.benefits-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2.5rem;}
+.benefit-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.4rem;transition:border-color 0.2s;}
+.benefit-card:hover{border-color:rgba(139,143,245,0.3);}
+.benefit-icon{width:36px;height:36px;background:rgba(139,143,245,0.1);border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:0.85rem;}
+.benefit-icon svg{width:16px;height:16px;stroke:var(--periwinkle);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.benefit-title{font-size:0.9rem;font-weight:700;color:var(--white);margin-bottom:0.3rem;}
+.benefit-desc{font-size:0.83rem;color:#cccccc;line-height:1.6;}
+ 
+/* ── FORM SECTION ── */
+.form-section{padding:5rem 1.5rem 7rem;}
+.form-inner{max-width:720px;margin:0 auto;}
+ 
+/* ── SECTION HEADER ── */
+.q-section-head{display:flex;align-items:flex-start;gap:1.2rem;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border);}
+.q-section-num{width:34px;height:34px;border-radius:9px;background:rgba(139,143,245,0.1);border:1px solid rgba(139,143,245,0.25);color:var(--periwinkle-light);display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:800;flex-shrink:0;margin-top:0.1rem;}
+.q-section-label{font-size:0.58rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--periwinkle);margin-bottom:0.3rem;}
+.q-section-title{font-size:1.1rem;font-weight:800;letter-spacing:-0.025em;color:var(--white);}
+.q-divider{height:1px;background:var(--border);margin:3.5rem 0;}
+ 
+/* ── QUESTIONS ── */
+.q-block{margin-bottom:2rem;}
+.q-label{display:block;font-size:0.92rem;font-weight:700;color:var(--white);margin-bottom:0.3rem;line-height:1.4;}
+.q-hint{font-size:0.82rem;color:#cccccc;margin-bottom:0.7rem;line-height:1.55;}
+.q-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+ 
+/* ── INPUTS ── */
+input[type="text"],input[type="email"],input[type="tel"],input[type="url"],input[type="number"],textarea,select{
+  width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+  padding:0.82rem 1rem;font-family:inherit;font-size:0.9rem;color:var(--white);
+  outline:none;transition:border-color 0.2s,box-shadow 0.2s;appearance:none;
+}
+input::placeholder,textarea::placeholder{color:var(--gray);}
+input:focus,textarea:focus,select:focus{border-color:var(--periwinkle);box-shadow:0 0 0 3px rgba(139,143,245,0.12);}
+textarea{resize:vertical;min-height:96px;line-height:1.65;}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.9rem center;padding-right:2.5rem;cursor:pointer;}
+.budget-manual-row{display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;}
+.budget-manual-row input[type="text"]{flex:1;min-width:180px;}
+ 
+/* ── CHECKBOXES ── */
+.check-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.55rem;}
+.check-grid-3{grid-template-columns:repeat(3,1fr);}
+.check-item{position:relative;}
+.check-item input[type="checkbox"]{position:absolute;opacity:0;width:0;height:0;}
+.check-item label{display:flex;align-items:flex-start;gap:0.7rem;padding:0.8rem 0.9rem;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.15s;font-size:0.85rem;font-weight:500;color:#cccccc;line-height:1.35;}
+.check-item label:hover{border-color:rgba(139,143,245,0.4);color:var(--white);}
+.check-item input:checked+label{background:rgba(139,143,245,0.08);border-color:var(--periwinkle);color:var(--white);font-weight:600;}
+.chk-box{width:15px;height:15px;border:1.5px solid var(--gray);border-radius:4px;flex-shrink:0;margin-top:1px;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
+.check-item input:checked+label .chk-box{background:var(--periwinkle);border-color:var(--periwinkle);}
+.check-item input:checked+label .chk-box::after{content:"";width:7px;height:4px;border-left:2px solid #0a0a0a;border-bottom:2px solid #0a0a0a;transform:rotate(-45deg) translateY(-1px);display:block;}
+.chk-text{flex:1;}
+.chk-sub{font-size:0.72rem;color:#bbb;font-weight:400;display:block;margin-top:0.12rem;}
+.check-item input:checked+label .chk-sub{color:rgba(139,143,245,0.7);}
+ 
+/* ── RADIO PILLS ── */
+.radio-pills{display:flex;flex-wrap:wrap;gap:0.45rem;}
+.radio-pill input[type="radio"]{display:none;}
+.radio-pill label{display:inline-block;padding:0.42rem 1rem;background:var(--bg2);border:1.5px solid var(--border);border-radius:100px;font-size:0.83rem;font-weight:600;color:#cccccc;cursor:pointer;transition:all 0.15s;}
+.radio-pill label:hover{border-color:rgba(139,143,245,0.4);color:var(--white);}
+.radio-pill input:checked+label{background:rgba(139,143,245,0.1);border-color:var(--periwinkle);color:var(--periwinkle-light);}
+ 
+/* ── SCALE ── */
+.scale-wrap{display:flex;gap:0.45rem;}
+.scale-item{flex:1;}
+.scale-item input[type="radio"]{display:none;}
+.scale-item label{display:flex;align-items:center;justify-content:center;padding:0.65rem 0.25rem;background:var(--bg2);border:1.5px solid var(--border);border-radius:9px;cursor:pointer;font-size:0.94rem;font-weight:700;color:#ccc;transition:all 0.15s;}
+.scale-item label:hover{border-color:rgba(139,143,245,0.4);color:var(--white);}
+.scale-item input:checked+label{background:rgba(139,143,245,0.1);border-color:var(--periwinkle);color:var(--periwinkle-light);}
+.scale-ends{display:flex;justify-content:space-between;font-size:0.72rem;color:#bbb;margin-top:0.4rem;padding:0 0.2rem;}
+ 
+/* ── SUBMIT ── */
+.submit-block{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:3rem 2.5rem;text-align:center;margin-top:3rem;position:relative;overflow:hidden;}
+.submit-block::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(139,143,245,0.08) 0%,transparent 60%);pointer-events:none;}
+.submit-inner{position:relative;z-index:1;}
+.submit-eyebrow{font-size:0.7rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--periwinkle);margin-bottom:0.75rem;}
+.submit-title{font-size:clamp(1.3rem,2.5vw,1.8rem);font-weight:800;letter-spacing:-0.03em;color:var(--white);margin-bottom:0.6rem;}
+.submit-sub{font-size:0.9rem;color:#cccccc;margin-bottom:2rem;line-height:1.65;max-width:440px;margin-left:auto;margin-right:auto;}
+.submit-btn{display:inline-flex;align-items:center;gap:0.55rem;background:var(--periwinkle);color:#0a0a0a;padding:0.85rem 2rem;border-radius:100px;font-family:inherit;font-size:0.88rem;font-weight:800;border:none;cursor:pointer;letter-spacing:-0.01em;transition:all 0.2s;box-shadow:0 0 20px rgba(139,143,245,0.25);}
+.submit-btn:hover{background:var(--periwinkle-light);transform:translateY(-1px);box-shadow:0 0 30px rgba(139,143,245,0.35);}
+.submit-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+.submit-note{font-size:0.76rem;color:#ccc;margin-top:1.1rem;}
+ 
+/* ── FOOTER ── */
+.page-footer{background:var(--bg2);border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.footer-brand{font-size:0.88rem;font-weight:800;color:var(--white);letter-spacing:-0.02em;}
+.footer-brand span{color:var(--periwinkle);}
+.footer-links{display:flex;gap:1.5rem;}
+.footer-links a{font-size:0.8rem;color:#cccccc;text-decoration:none;transition:color 0.2s;}
+.footer-links a:hover{color:var(--white);}
+ 
+/* ── SUCCESS ── */
+.success-screen{display:none;position:fixed;inset:0;background:var(--bg);z-index:9999;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;}
+.success-screen.show{display:flex;}
+.success-ring{width:72px;height:72px;border-radius:50%;background:rgba(184,245,160,0.08);border:1px solid rgba(184,245,160,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 1.8rem;}
+.success-ring svg{width:30px;height:30px;stroke:var(--accent-green);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+.success-eyebrow{font-size:0.72rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent-green);margin-bottom:0.75rem;}
+.success-title{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;letter-spacing:-0.04em;color:var(--white);margin-bottom:1rem;line-height:1.1;}
+.success-sub{font-size:1.02rem;color:#cccccc;max-width:480px;line-height:1.75;margin:0 auto 2rem;}
+.success-chips{display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;}
+.success-chip{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:#cccccc;font-size:0.78rem;padding:0.3rem 0.85rem;border-radius:100px;}
+ 
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .q-row,.check-grid,.check-grid-3,.benefits-grid{grid-template-columns:1fr;}
+  .process-steps{grid-template-columns:1fr 1fr;gap:1.5rem;}
+  .process-steps::before{display:none;}
+  nav{padding:0 1.2rem;}
+  .process-section,.benefits-section,.form-section{padding:3rem 1.2rem;}
+  .submit-block{padding:2rem 1.4rem;}
+  .hero-content{padding:3rem 1.2rem;}
+}
+</style>
+</head>
+<body>
+ 
+<!-- Nav -->
+<nav>
+  <a href="https://asklana.co" class="nav-logo">asklana<span>.</span></a>
+  <a href="https://asklana.co" class="nav-back">
+    <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    asklana.co
+  </a>
+</nav>
+ 
+<!-- Progress -->
+<div class="prog-bar" id="prog"></div>
+ 
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Client Discovery &nbsp;·&nbsp; asklana.co</div>
+    <h1 class="hero-title">Let's build something<br><em>incredible together.</em></h1>
+    <p class="hero-sub">Before I build your proposal, I want to understand your business fully — where you are, where you want to go, and what's standing between the two. This takes about 8–12 minutes and every answer is confidential.</p>
+    <div class="hero-chips">
+      <div class="hero-chip">8–12 minutes</div>
+      <div class="hero-chip">100% confidential</div>
+      <div class="hero-chip">No commitment required</div>
+    </div>
+    <div class="hero-scroll">
+      <span>Scroll to begin</span>
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+    </div>
+  </div>
+</div>
+ 
+<!-- Process -->
+<div class="process-section">
+  <div class="process-inner">
+    <div class="section-eyebrow">What happens next</div>
+    <h2 class="section-h2">Here's how this works.</h2>
+    <p class="section-sub">No guesswork. You fill this out, I handle the rest — and you'll have a custom proposal in your inbox before you know it.</p>
+    <div class="process-steps">
+      <div class="process-step">
+        <div class="step-num">01</div>
+        <div class="step-title">You fill this out</div>
+        <div class="step-desc">Answer honestly — there are no wrong answers. The more detail, the better the proposal I'll be able to build for you.</div>
+      </div>
+      <div class="process-step">
+        <div class="step-num">02</div>
+        <div class="step-title">You receive a proposal</div>
+        <div class="step-desc">I'll review your answers and deliver a fully custom proposal — scoped specifically to your business and goals.</div>
+      </div>
+      <div class="process-step">
+        <div class="step-num">03</div>
+        <div class="step-title">We connect on a discovery call</div>
+        <div class="step-desc">Walk through the proposal together. Ask every question, discuss costs, timelines, and expectations — no pressure, just clarity.</div>
+      </div>
+      <div class="process-step">
+        <div class="step-num">04</div>
+        <div class="step-title">We make it official</div>
+        <div class="step-desc">If we're aligned, we sign our mutual agreement and get to work. Simple, clear, and built around what's right for both of us.</div>
+      </div>
+    </div>
+    <div class="onboard-note">
+      <div class="onboard-dot"></div>
+      <p>Average onboarding time — from form submission to officially kicking off — is <strong>1–2 weeks</strong>, including proposal delivery and the discovery call.</p>
+    </div>
+  </div>
+</div>
+ 
+<!-- Benefits -->
+<div class="benefits-section">
+  <div class="benefits-inner">
+    <div class="section-eyebrow">Why asklana.</div>
+    <h2 class="section-h2">What working together looks like.</h2>
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+        <div class="benefit-title">End-to-End Execution</div>
+        <div class="benefit-desc">From strategy through build through launch — I don't hand you a deck and disappear. I stay in it with you.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+        <div class="benefit-title">Systems That Actually Work</div>
+        <div class="benefit-desc">Operational infrastructure, digital products, and automation built to save time and scale your business — not create more complexity.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+        <div class="benefit-title">A Real Strategic Partner</div>
+        <div class="benefit-desc">Not a vendor, not a freelancer — a partner who understands your business and is invested in your outcomes.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div class="benefit-title">Data-Driven Direction</div>
+        <div class="benefit-desc">Strategy grounded in analytics and performance — not guesswork or generic best practices.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+        <div class="benefit-title">Brand-First Thinking</div>
+        <div class="benefit-desc">Everything built to reflect who you are — not a template applied to your name. Your brand is the brief.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        <div class="benefit-title">Clarity at Every Step</div>
+        <div class="benefit-desc">You'll always know what's happening, why, and what comes next. No black boxes, no surprises.</div>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- Form -->
+<div class="form-section">
+<div class="form-inner">
+<form id="qform" action="https://api.web3forms.com/submit" method="POST">
+  <input type="hidden" name="access_key" value="2253f340-ea90-416d-8b66-06ec2690b957">
+  <input type="hidden" name="subject" value="asklana. Discovery Form Submission">
+  <input type="hidden" name="redirect" value="false">
+  <input type="checkbox" name="botcheck" style="display:none">
+ 
+  <!-- ── S1 ── -->
+  <div class="q-section-head">
+    <div class="q-section-num">01</div>
+    <div><div class="q-section-label">Getting Started</div><div class="q-section-title">About you & your business</div></div>
+  </div>
+ 
+  <div class="q-row q-block">
+    <div><label class="q-label">Your name *</label><input type="text" name="name" placeholder="First and last name" required></div>
+    <div><label class="q-label">Your role *</label><input type="text" name="role" placeholder="e.g. Owner, Property Manager"></div>
+  </div>
+  <div class="q-row q-block">
+    <div><label class="q-label">Email address *</label><input type="email" name="email" placeholder="your@email.com" required></div>
+    <div><label class="q-label">WhatsApp / Phone</label><input type="tel" name="phone" placeholder="+1 or +52..."></div>
+  </div>
+  <div class="q-block">
+    <label class="q-label">Business name & location</label>
+    <input type="text" name="business_info" placeholder="e.g. MAIIM · Tulum, Quintana Roo, Mexico">
+  </div>
+  <div class="q-block">
+    <label class="q-label">How would you describe your business to someone who's never heard of it?</label>
+    <p class="q-hint">Your brand, your vibe, the experience you want people to walk away with.</p>
+    <textarea name="business_description" placeholder="We are…"></textarea>
+  </div>
+  <div class="q-block">
+    <label class="q-label">Who is your ideal customer or guest?</label>
+    <p class="q-hint">Think travelers, long-term renters, buyers, lifestyle segments — whoever you most want to attract and serve.</p>
+    <textarea name="ideal_customer" placeholder="Our ideal customer is…" style="min-height:80px;"></textarea>
+  </div>
+  <div class="q-block">
+    <label class="q-label">Where is your business right now in its growth?</label>
+    <div class="radio-pills" style="margin-top:0.6rem;">
+      <div class="radio-pill"><input type="radio" name="growth_stage" id="gs1" value="just_started"><label for="gs1">Just getting started</label></div>
+      <div class="radio-pill"><input type="radio" name="growth_stage" id="gs2" value="establishing"><label for="gs2">Established, building momentum</label></div>
+      <div class="radio-pill"><input type="radio" name="growth_stage" id="gs3" value="scaling"><label for="gs3">Ready to scale</label></div>
+      <div class="radio-pill"><input type="radio" name="growth_stage" id="gs4" value="optimizing"><label for="gs4">Optimizing what already works</label></div>
+    </div>
+  </div>
+ 
+  <div class="q-divider"></div>
+ 
+  <!-- ── S2 ── -->
+  <div class="q-section-head">
+    <div class="q-section-num">02</div>
+    <div><div class="q-section-label">Where You Are Now</div><div class="q-section-title">Current digital presence & operations</div></div>
+  </div>
+ 
+  <div class="q-block">
+    <label class="q-label">Do you currently have a website?</label>
+    <div class="radio-pills" style="margin-top:0.6rem;">
+      <div class="radio-pill"><input type="radio" name="has_website" id="hw1" value="yes_good"><label for="hw1">Yes — it's working well</label></div>
+      <div class="radio-pill"><input type="radio" name="has_website" id="hw2" value="yes_needs_work"><label for="hw2">Yes — but it needs work</label></div>
+      <div class="radio-pill"><input type="radio" name="has_website" id="hw3" value="no"><label for="hw3">No website yet</label></div>
+      <div class="radio-pill"><input type="radio" name="has_website" id="hw4" value="in_progress"><label for="hw4">In progress</label></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <label class="q-label">Website URL (if you have one)</label>
+    <input type="url" name="website_url" placeholder="https://yoursite.com">
+  </div>
+  <div class="q-block">
+    <label class="q-label">Where do most of your leads or bookings come from today?</label>
+    <p class="q-hint">Select all that apply.</p>
+    <div class="check-grid">
+      <div class="check-item"><input type="checkbox" id="bs1" name="booking_source" value="airbnb_vrbo"><label for="bs1"><div class="chk-box"></div><div class="chk-text">Airbnb / VRBO / OTAs<span class="chk-sub">Third-party listing platforms</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="bs2" name="booking_source" value="direct_website"><label for="bs2"><div class="chk-box"></div><div class="chk-text">Direct / Website<span class="chk-sub">People who find you directly</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="bs3" name="booking_source" value="instagram_social"><label for="bs3"><div class="chk-box"></div><div class="chk-text">Instagram / Social<span class="chk-sub">DMs and social discovery</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="bs4" name="booking_source" value="word_of_mouth"><label for="bs4"><div class="chk-box"></div><div class="chk-text">Word of Mouth / Referrals<span class="chk-sub">People recommending you</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="bs5" name="booking_source" value="partners_agents"><label for="bs5"><div class="chk-box"></div><div class="chk-text">Travel Agents / Partners<span class="chk-sub">Third-party agents or concierges</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="bs6" name="booking_source" value="google_search"><label for="bs6"><div class="chk-box"></div><div class="chk-text">Google Search<span class="chk-sub">Organic or paid search traffic</span></div></label></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <label class="q-label">How would you rate your overall digital presence right now?</label>
+    <p class="q-hint">1 = Essentially invisible &nbsp;·&nbsp; 5 = Strong, consistent, and converting</p>
+    <div class="scale-wrap" style="margin-top:0.6rem;">
+      <div class="scale-item"><input type="radio" name="digital_score" id="ds1" value="1"><label for="ds1">1</label></div>
+      <div class="scale-item"><input type="radio" name="digital_score" id="ds2" value="2"><label for="ds2">2</label></div>
+      <div class="scale-item"><input type="radio" name="digital_score" id="ds3" value="3"><label for="ds3">3</label></div>
+      <div class="scale-item"><input type="radio" name="digital_score" id="ds4" value="4"><label for="ds4">4</label></div>
+      <div class="scale-item"><input type="radio" name="digital_score" id="ds5" value="5"><label for="ds5">5</label></div>
+    </div>
+    <div class="scale-ends"><span>Essentially invisible</span><span>Strong &amp; converting</span></div>
+  </div>
+  <div class="q-block">
+    <label class="q-label">What social media platforms are you active on?</label>
+    <div class="check-grid check-grid-3">
+      <div class="check-item"><input type="checkbox" id="sm1" name="social_media" value="instagram"><label for="sm1"><div class="chk-box"></div><div class="chk-text">Instagram</div></label></div>
+      <div class="check-item"><input type="checkbox" id="sm2" name="social_media" value="tiktok"><label for="sm2"><div class="chk-box"></div><div class="chk-text">TikTok</div></label></div>
+      <div class="check-item"><input type="checkbox" id="sm3" name="social_media" value="facebook"><label for="sm3"><div class="chk-box"></div><div class="chk-text">Facebook</div></label></div>
+      <div class="check-item"><input type="checkbox" id="sm4" name="social_media" value="pinterest"><label for="sm4"><div class="chk-box"></div><div class="chk-text">Pinterest</div></label></div>
+      <div class="check-item"><input type="checkbox" id="sm5" name="social_media" value="youtube"><label for="sm5"><div class="chk-box"></div><div class="chk-text">YouTube</div></label></div>
+      <div class="check-item"><input type="checkbox" id="sm6" name="social_media" value="none"><label for="sm6"><div class="chk-box"></div><div class="chk-text">None yet</div></label></div>
+    </div>
+  </div>
+ 
+  <div class="q-divider"></div>
+ 
+  <!-- ── S3 ── -->
+  <div class="q-section-head">
+    <div class="q-section-num">03</div>
+    <div><div class="q-section-label">Challenges</div><div class="q-section-title">What's getting in the way</div></div>
+  </div>
+ 
+  <div class="q-block">
+    <label class="q-label">What are your biggest pain points right now?</label>
+    <p class="q-hint">Select everything that feels true — don't filter yourself.</p>
+    <div class="check-grid">
+      <div class="check-item"><input type="checkbox" id="pp1" name="pain_points" value="ota_dependency"><label for="pp1"><div class="chk-box"></div><div class="chk-text">Too dependent on Airbnb/OTAs<span class="chk-sub">Platform fees eating into margin</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="pp2" name="pain_points" value="no_website"><label for="pp2"><div class="chk-box"></div><div class="chk-text">No strong website<span class="chk-sub">Nothing to send people to</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="pp3" name="pain_points" value="weak_brand"><label for="pp3"><div class="chk-box"></div><div class="chk-text">Inconsistent or weak branding<span class="chk-sub">Doesn't reflect the real experience</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="pp4" name="pain_points" value="no_seo"><label for="pp4"><div class="chk-box"></div><div class="chk-text">Not showing up in search<span class="chk-sub">Low Google / SEO visibility</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="pp5" name="pain_points" value="manual_ops"><label for="pp5"><div class="chk-box"></div><div class="chk-text">Disorganized or manual operations<span class="chk-sub">Comms, bookings, housekeeping, admin</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="pp6" name="pain_points" value="no_crm"><label for="pp6"><div class="chk-box"></div><div class="chk-text">No guest or client data<span class="chk-sub">Losing repeat business to competitors</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="pp7" name="pain_points" value="weak_social"><label for="pp7"><div class="chk-box"></div><div class="chk-text">Weak social media presence<span class="chk-sub">Not converting followers to business</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="pp8" name="pain_points" value="no_ads"><label for="pp8"><div class="chk-box"></div><div class="chk-text">No paid advertising strategy<span class="chk-sub">Not running ads or running them blind</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="pp9" name="pain_points" value="no_analytics"><label for="pp9"><div class="chk-box"></div><div class="chk-text">No visibility into performance<span class="chk-sub">No dashboards or meaningful data</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="pp10" name="pain_points" value="no_content"><label for="pp10"><div class="chk-box"></div><div class="chk-text">Lack of content or assets<span class="chk-sub">Nothing strong to market with</span></div></label></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <label class="q-label">In your own words — what's the single most important thing you want to fix in the next 90 days?</label>
+    <textarea name="top_priority" placeholder="The one thing I most want to change is…" style="min-height:80px;"></textarea>
+  </div>
+  <div class="q-block">
+    <label class="q-label">What have you already tried? What worked, what didn't?</label>
+    <p class="q-hint">Helps me skip what's been done and understand what hasn't stuck.</p>
+    <textarea name="tried_before" placeholder="We've tried… it worked / it didn't because…"></textarea>
+  </div>
+ 
+  <div class="q-divider"></div>
+ 
+  <!-- ── S4 ── -->
+  <div class="q-section-head">
+    <div class="q-section-num">04</div>
+    <div><div class="q-section-label">Vision</div><div class="q-section-title">Where you want to go</div></div>
+  </div>
+ 
+  <div class="q-block">
+    <label class="q-label">What does success look like in the next 12 months?</label>
+    <p class="q-hint">Be specific — occupancy, revenue, brand recognition, anything that matters to you.</p>
+    <textarea name="success_12mo" placeholder="In 12 months, we will have…"></textarea>
+  </div>
+  <div class="q-block">
+    <label class="q-label">Are there specific markets or customer segments you want to reach more of?</label>
+    <p class="q-hint">e.g. US/European travelers, luxury market, long-term renters, corporate retreats, wellness guests…</p>
+    <textarea name="target_markets" placeholder="We'd love to attract more…" style="min-height:80px;"></textarea>
+  </div>
+  <div class="q-block">
+    <label class="q-label">Where do you see your business in 3 years?</label>
+    <textarea name="vision_3yr" placeholder="The 3-year vision is…" style="min-height:80px;"></textarea>
+  </div>
+ 
+  <div class="q-divider"></div>
+ 
+  <!-- ── S5 ── -->
+  <div class="q-section-head">
+    <div class="q-section-num">05</div>
+    <div><div class="q-section-label">How I Can Help</div><div class="q-section-title">Services you'd most benefit from</div></div>
+  </div>
+ 
+  <div class="q-block">
+    <label class="q-label">Which services feel most relevant to where you are right now?</label>
+    <p class="q-hint">Select everything that resonates — this is not a commitment, just your honest instinct.</p>
+    <div class="check-grid">
+      <div class="check-item"><input type="checkbox" id="sv1" name="services" value="web_design"><label for="sv1"><div class="chk-box"></div><div class="chk-text">Website Design & Development<span class="chk-sub">A site that looks and converts</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="sv2" name="services" value="direct_booking"><label for="sv2"><div class="chk-box"></div><div class="chk-text">Direct Booking System<span class="chk-sub">Own your bookings, cut OTA fees</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="sv3" name="services" value="seo"><label for="sv3"><div class="chk-box"></div><div class="chk-text">SEO & Search Visibility<span class="chk-sub">Get found when people search</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="sv4" name="services" value="brand_strategy"><label for="sv4"><div class="chk-box"></div><div class="chk-text">Brand Strategy<span class="chk-sub">Positioning, identity, voice, story</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="sv5" name="services" value="social_media"><label for="sv5"><div class="chk-box"></div><div class="chk-text">Social Media Strategy<span class="chk-sub">Content, growth, and conversion</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="sv6" name="services" value="paid_ads"><label for="sv6"><div class="chk-box"></div><div class="chk-text">Paid Advertising<span class="chk-sub">Meta & Google Ads strategy</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="sv7" name="services" value="ops_systems"><label for="sv7"><div class="chk-box"></div><div class="chk-text">Operational Systems<span class="chk-sub">Automations, workflows, infrastructure</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="sv8" name="services" value="crm_retention"><label for="sv8"><div class="chk-box"></div><div class="chk-text">CRM & Retention<span class="chk-sub">Guest/client data and re-engagement</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="sv9" name="services" value="content_copy"><label for="sv9"><div class="chk-box"></div><div class="chk-text">Content & Copywriting<span class="chk-sub">Listings, emails, web copy</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="sv10" name="services" value="analytics"><label for="sv10"><div class="chk-box"></div><div class="chk-text">Analytics & Business Intelligence<span class="chk-sub">Revenue dashboards, performance data</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="sv11" name="services" value="email_marketing"><label for="sv11"><div class="chk-box"></div><div class="chk-text">Email Marketing<span class="chk-sub">Automations, newsletters, promotions</span></div></label></div>
+      <div class="check-item"><input type="checkbox" id="sv12" name="services" value="full_partnership"><label for="sv12"><div class="chk-box"></div><div class="chk-text">Full Strategy Partnership<span class="chk-sub">Ongoing strategy & execution</span></div></label></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <label class="q-label">How urgently do you need to move on this?</label>
+    <div class="radio-pills" style="margin-top:0.6rem;">
+      <div class="radio-pill"><input type="radio" name="urgency" id="ug1" value="asap"><label for="ug1">ASAP</label></div>
+      <div class="radio-pill"><input type="radio" name="urgency" id="ug2" value="30_days"><label for="ug2">Within 30 days</label></div>
+      <div class="radio-pill"><input type="radio" name="urgency" id="ug3" value="60_90_days"><label for="ug3">60–90 days</label></div>
+      <div class="radio-pill"><input type="radio" name="urgency" id="ug4" value="still_exploring"><label for="ug4">Still exploring</label></div>
+    </div>
+  </div>
+ 
+  <div class="q-divider"></div>
+ 
+  <!-- ── S6 ── -->
+  <div class="q-section-head">
+    <div class="q-section-num">06</div>
+    <div><div class="q-section-label">Logistics</div><div class="q-section-title">Budget, timeline & how you work</div></div>
+  </div>
+ 
+  <div class="q-block">
+    <label class="q-label">Are you looking for a one-time project or an ongoing partnership?</label>
+    <div class="radio-pills" style="margin-top:0.6rem;">
+      <div class="radio-pill"><input type="radio" name="engagement_type" id="et1" value="one_time"><label for="et1">One-time project</label></div>
+      <div class="radio-pill"><input type="radio" name="engagement_type" id="et2" value="retainer"><label for="et2">Ongoing monthly retainer</label></div>
+      <div class="radio-pill"><input type="radio" name="engagement_type" id="et3" value="project_then_ongoing"><label for="et3">Project first, then ongoing</label></div>
+      <div class="radio-pill"><input type="radio" name="engagement_type" id="et4" value="unsure"><label for="et4">Not sure yet</label></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <label class="q-label">What's your approximate budget for this engagement?</label>
+    <p class="q-hint">All figures USD. This helps me scope the right proposal — not a hard ceiling.</p>
+    <div class="budget-manual-row" style="margin-top:0.6rem;">
+      <input type="text" name="budget_amount" id="budget-input" placeholder="Enter an amount, e.g. $5,000" style="max-width:260px;">
+      <span style="color:var(--gray);font-size:0.78rem;">or</span>
+      <div class="check-item" style="min-width:180px;">
+        <input type="checkbox" id="bud-flex" name="budget_flexible" value="flexible" onchange="document.getElementById('budget-input').disabled=this.checked;if(this.checked)document.getElementById('budget-input').value='';document.getElementById('budget-input').placeholder=this.checked?'—':'Enter an amount, e.g. $5,000';">
+        <label for="bud-flex" style="padding:0.6rem 0.8rem;"><div class="chk-box"></div><div class="chk-text" style="font-size:0.78rem;">Flexible / Not Sure Yet</div></label>
+      </div>
+    </div>
+  </div>
+  <div class="q-block">
+    <label class="q-label">How do you prefer to communicate and collaborate?</label>
+    <div class="check-grid check-grid-3">
+      <div class="check-item"><input type="checkbox" id="cm1" name="comms" value="whatsapp"><label for="cm1"><div class="chk-box"></div><div class="chk-text">WhatsApp</div></label></div>
+      <div class="check-item"><input type="checkbox" id="cm2" name="comms" value="email"><label for="cm2"><div class="chk-box"></div><div class="chk-text">Email</div></label></div>
+      <div class="check-item"><input type="checkbox" id="cm3" name="comms" value="video_calls"><label for="cm3"><div class="chk-box"></div><div class="chk-text">Video Calls</div></label></div>
+      <div class="check-item"><input type="checkbox" id="cm4" name="comms" value="in_person"><label for="cm4"><div class="chk-box"></div><div class="chk-text">In Person</div></label></div>
+      <div class="check-item"><input type="checkbox" id="cm5" name="comms" value="shared_docs"><label for="cm5"><div class="chk-box"></div><div class="chk-text">Shared Docs</div></label></div>
+      <div class="check-item"><input type="checkbox" id="cm6" name="comms" value="slack"><label for="cm6"><div class="chk-box"></div><div class="chk-text">Slack / Notion</div></label></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <label class="q-label">Who else is involved in making decisions?</label>
+    <input type="text" name="decision_makers" placeholder="e.g. Just me / The property owner has final say / Team of 3">
+  </div>
+ 
+  <div class="q-divider"></div>
+ 
+  <!-- ── S7 ── -->
+  <div class="q-section-head">
+    <div class="q-section-num">07</div>
+    <div><div class="q-section-label">Open Floor</div><div class="q-section-title">Anything else I should know</div></div>
+  </div>
+ 
+  <div class="q-block">
+    <label class="q-label">Is there anything about your business — its story, its challenges, its ambitions — that you want me to understand before I write this proposal?</label>
+    <p class="q-hint">This is the most important question. Take your time.</p>
+    <textarea name="anything_else" placeholder="Something I'd want you to know before you write the proposal…" style="min-height:120px;"></textarea>
+  </div>
+  <div class="q-block">
+    <label class="q-label">How did you hear about asklana.?</label>
+    <div class="radio-pills" style="margin-top:0.6rem;">
+      <div class="radio-pill"><input type="radio" name="referral_source" id="rs1" value="met_in_person"><label for="rs1">Met in person</label></div>
+      <div class="radio-pill"><input type="radio" name="referral_source" id="rs2" value="instagram"><label for="rs2">Instagram</label></div>
+      <div class="radio-pill"><input type="radio" name="referral_source" id="rs3" value="referral"><label for="rs3">Referral</label></div>
+      <div class="radio-pill"><input type="radio" name="referral_source" id="rs4" value="google"><label for="rs4">Google</label></div>
+      <div class="radio-pill"><input type="radio" name="referral_source" id="rs5" value="asklana_co"><label for="rs5">asklana.co</label></div>
+      <div class="radio-pill"><input type="radio" name="referral_source" id="rs6" value="other"><label for="rs6">Other</label></div>
+    </div>
+  </div>
+ 
+  <!-- Submit -->
+  <div class="submit-block">
+    <div class="submit-inner">
+      <div class="submit-eyebrow">Almost there</div>
+      <div class="submit-title">That's everything I need to get started.</div>
+      <p class="submit-sub">Once submitted, I'll review your answers and have a custom proposal in your inbox within 3–5 business days.</p>
+      <button type="submit" class="submit-btn">
+        Submit & Send to Lana
+        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+      <p class="submit-note">Your responses go directly to Lana Johnson at asklana. and are kept completely confidential.</p>
+    </div>
+  </div>
+ 
+</form>
+</div>
+</div>
+ 
+<!-- Footer -->
+<div class="page-footer">
+  <div class="footer-brand">asklana<span>.</span></div>
+  <div class="footer-links">
+    <a href="https://asklana.co">asklana.co</a>
+    <a href="mailto:lana@asklana.co">lana@asklana.co</a>
+  </div>
+</div>
+ 
+<!-- Success screen -->
+<div class="success-screen" id="success-screen">
+  <div class="success-ring"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+  <div class="success-eyebrow">Submitted successfully</div>
+  <h2 class="success-title">Thank you.<br>We're just getting started.</h2>
+  <p class="success-sub">Your responses are on their way to Lana. You'll receive additional information — including your custom proposal — within 3–5 business days. Keep an eye on your inbox.</p>
+  <div class="success-chips">
+    <div class="success-chip">Proposal within 3–5 business days</div>
+    <div class="success-chip">Discovery call to follow</div>
+    <div class="success-chip">Onboarding in 1–2 weeks</div>
+  </div>
+</div>
+ 
+<script>
+// Progress bar
+function updateProg(){
+  const form=document.getElementById("qform");
+  const texts=form.querySelectorAll("input[type=text],input[type=email],input[type=tel],input[type=url],textarea");
+  const radioGroups={},checkGroups={};
+  form.querySelectorAll("input[type=radio]").forEach(r=>{radioGroups[r.name]=radioGroups[r.name]||r.checked;});
+  form.querySelectorAll("input[type=checkbox]:not([name=botcheck])").forEach(c=>{checkGroups[c.name]=checkGroups[c.name]||c.checked;});
+  let filled=0,total=0;
+  texts.forEach(i=>{total++;if(i.value.trim())filled++;});
+  Object.values(radioGroups).forEach(v=>{total++;if(v)filled++;});
+  Object.values(checkGroups).forEach(v=>{total++;if(v)filled++;});
+  document.getElementById("prog").style.width=Math.round(filled/total*100)+"%";
+}
+document.getElementById("qform").addEventListener("input",updateProg);
+document.getElementById("qform").addEventListener("change",updateProg);
+ 
+// Scroll fade-in
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity="1";e.target.style.transform="translateY(0)";}}),{threshold:0.08});
+document.querySelectorAll(".q-block,.q-section-head,.benefit-card,.process-step").forEach(el=>{
+  el.style.opacity="0";el.style.transform="translateY(18px)";el.style.transition="opacity 0.45s ease,transform 0.45s ease";obs.observe(el);
+});
+ 
+// Web3Forms submit
+document.getElementById("qform").addEventListener("submit",async function(e){
+  e.preventDefault();
+  const btn=this.querySelector(".submit-btn");
+  btn.textContent="Sending…";btn.disabled=true;
+  const data=new FormData(this);
+  const res=await fetch("https://api.web3forms.com/submit",{method:"POST",body:data});
+  const json=await res.json();
+  if(json.success){
+    document.getElementById("success-screen").classList.add("show");
+    window.scrollTo({top:0,behavior:"smooth"});
+  } else {
+    btn.textContent="Something went wrong — try again";
+    btn.disabled=false;
+    btn.style.background="#f87171";
+  }
+});
+</script>
+</body>
+</html>
