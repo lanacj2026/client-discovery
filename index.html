@@ -166,8 +166,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .footer-links a:hover{color:var(--white);}
  
 /* ── SUCCESS ── */
-.success-screen{display:none;position:fixed;inset:0;background:var(--bg);z-index:9999;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;}
-.success-screen.show{display:flex;}
+.success-screen{display:none;position:fixed;inset:0;background:var(--bg);z-index:9999;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;opacity:0;transition:opacity 0.4s ease;}
+.success-screen.show{opacity:1;}
 .success-ring{width:72px;height:72px;border-radius:50%;background:rgba(184,245,160,0.08);border:1px solid rgba(184,245,160,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 1.8rem;}
 .success-ring svg{width:30px;height:30px;stroke:var(--accent-green);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
 .success-eyebrow{font-size:0.72rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent-green);margin-bottom:0.75rem;}
@@ -628,21 +628,43 @@ document.querySelectorAll(".q-block,.q-section-head,.benefit-card,.process-step"
 });
  
 // Web3Forms submit
-document.getElementById("qform").addEventListener("submit",async function(e){
+document.getElementById("qform").addEventListener("submit", async function(e) {
   e.preventDefault();
-  const btn=this.querySelector(".submit-btn");
-  btn.textContent="Sending…";btn.disabled=true;
-  const data=new FormData(this);
-  const res=await fetch("https://api.web3forms.com/submit",{method:"POST",body:data});
-  const json=await res.json();
-  if(json.success){
-    document.getElementById("success-screen").classList.add("show");
-    window.scrollTo({top:0,behavior:"smooth"});
-  } else {
-    btn.textContent="Something went wrong — try again";
-    btn.disabled=false;
-    btn.style.background="#f87171";
+  e.stopPropagation();
+ 
+  const btn = this.querySelector(".submit-btn");
+  const originalHTML = btn.innerHTML;
+  btn.innerHTML = "Sending…";
+  btn.disabled = true;
+ 
+  try {
+    const data = new FormData(this);
+    const res = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      body: data
+    });
+    const json = await res.json();
+ 
+    if (json.success) {
+      // Show success screen
+      const screen = document.getElementById("success-screen");
+      screen.style.display = "flex";
+      // Small delay so display:flex renders before opacity transition
+      requestAnimationFrame(() => {
+        screen.classList.add("show");
+      });
+    } else {
+      throw new Error(json.message || "Submission failed");
+    }
+  } catch (err) {
+    console.error("Form error:", err);
+    btn.innerHTML = "Something went wrong — try again";
+    btn.disabled = false;
+    btn.style.background = "#f87171";
+    btn.style.color = "#fff";
   }
+ 
+  return false;
 });
 </script>
 </body>
