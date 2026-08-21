@@ -102,7 +102,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:999;background:var(--bg);border-
 .q-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
  
 /* ── INPUTS ── */
-input[type="text"],input[type="email"],input[type="tel"],input[type="url"],input[type="number"],textarea,select{
+input[type="text"],input[type="text"],input[type="tel"],input[type="text"],input[type="number"],textarea,select{
   width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;
   padding:0.82rem 1rem;font-family:inherit;font-size:0.9rem;color:var(--white);
   outline:none;transition:border-color 0.2s,box-shadow 0.2s;appearance:none;
@@ -213,7 +213,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="hero-chips">
       <div class="hero-chip">8–12 minutes</div>
       <div class="hero-chip">100% confidential</div>
-      <div class="hero-chip">No commitment required</div>
+      <div class="hero-chip">No commitment</div>
     </div>
     <div class="hero-scroll">
       <span>Scroll to begin</span>
@@ -313,11 +313,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
  
   <div class="q-row q-block">
-    <div><label class="q-label">Your name *</label><input type="text" name="name" placeholder="First and last name" required></div>
+    <div><label class="q-label">Your name *</label><input type="text" name="name" placeholder="First and last name"></div>
     <div><label class="q-label">Your role *</label><input type="text" name="role" placeholder="e.g. Owner, Property Manager"></div>
   </div>
   <div class="q-row q-block">
-    <div><label class="q-label">Email address *</label><input type="email" name="email" placeholder="your@email.com" required></div>
+    <div><label class="q-label">Email address *</label><input type="text" name="email" placeholder="your@email.com"></div>
     <div><label class="q-label">WhatsApp / Phone</label><input type="tel" name="phone" placeholder="+1 or +52..."></div>
   </div>
   <div class="q-block">
@@ -363,7 +363,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
   <div class="q-block">
     <label class="q-label">Website URL (if you have one)</label>
-    <input type="url" name="website_url" placeholder="https://yoursite.com">
+    <input type="text" name="website_url" placeholder="https://yoursite.com">
   </div>
   <div class="q-block">
     <label class="q-label">Where do most of your leads or bookings come from today?</label>
